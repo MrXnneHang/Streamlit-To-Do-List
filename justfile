@@ -8,6 +8,8 @@ test:
   just clean
 
 start:
+  uv lock
+  uv sync
   uv run streamlit run src/todo/__main__.py
 
 fmt:
