@@ -1,4 +1,4 @@
-[简体中文](https://github.com/MrXnneHang/Streamlit-To-Do-List#README_zh.md) | [English](https://github.com/MrXnneHang/Streamlit-To-Do-List#README.md)
+简体中文 | [English](https://github.com/MrXnneHang/Streamlit-To-Do-List/blob/main/README.md)
 
 <p align="center">
     <a href="https://github.com/Akshay090/svg-banners">
@@ -17,7 +17,7 @@
     </div>
 </p>
 
-# A To-Do-List App buit with Streamlit
+# 一个基于 Streamlit 的待办事件应用
 
 基于 [Streamlit](https://streamlit.io/) , 从 [ShigureLab/python-lib-starter](https://github.com/ShigureLab/python-lib-starter) 模板创建的 To-Do-List 应用。
 

@@ -1,4 +1,4 @@
-[简体中文](https://github.com/MrXnneHang/Streamlit-To-Do-List#README_zh.md) | [English](https://github.com/MrXnneHang/Streamlit-To-Do-List#README.md)
+[简体中文](https://github.com/MrXnneHang/Streamlit-To-Do-List/blob/main/README_zh.md) | English
 <p align="center">
     <a href="https://github.com/Akshay090/svg-banners">
         <img src="https://svg-banners.vercel.app/api?type=origin&text1=Streamlit-To-Do-List&text2=💖%20Open%20Source&width=800&height=200" alt="Streamlit To-Do List Banner">
@@ -15,7 +15,9 @@
          <a href="https://gitmoji.dev"><img alt="Gitmoji" src="https://img.shields.io/badge/gitmoji-😜%20😍-FFDD67?style=flat-square"></a>
     </div>
 </p>
+
 # A To-Do-List App built with Streamlit
+
 Created from the [ShigureLab/python-lib-starter](https://github.com/ShigureLab/python-lib-starter) template, based on [Streamlit](https://streamlit.io/).
 
 ## Introduction:
@@ -25,8 +27,8 @@ I categorize tasks into daily, weekly, and monthly to break down large tasks int
 
 It simply supports user language switching, currently supporting Chinese and English.
 
-![alt text](https://fastly.jsdelivr.net/gh/MrXnneHang/blog_img/BlogHosting/img/25/02/202503271604519.png)
-![alt text](https://fastly.jsdelivr.net/gh/MrXnneHang/blog_img/BlogHosting/img/25/02/202503271604247.png)
+![image-20250327164514385](https://fastly.jsdelivr.net/gh/MrXnneHang/blog_img/BlogHosting/img/25/02/202503271645755.png)
+![image-20250327164638899](https://fastly.jsdelivr.net/gh/MrXnneHang/blog_img/BlogHosting/img/25/02/202503271646199.png)
 
 ## Deployment
 ### Project Management Tool: uv
