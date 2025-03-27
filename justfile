@@ -19,8 +19,6 @@ fmt:
 lint:
   uv run pyright src/todo tests
   uv run ruff check .
-
-fmt-docs:
   prettier --write '**/*.md'
 
 build:
