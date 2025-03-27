@@ -150,6 +150,7 @@ def sort_tasks_by_due_date(task: Task) -> tuple[datetime.date, datetime.datetime
 
     return (due_date, created_at)
 
+
 def sort_completed_tasks(task: Task) -> tuple[datetime.datetime, datetime.datetime]:
     completed_at = safe_strptime(task.completed_at, "%Y-%m-%d %H:%M") or datetime.datetime.min
     created_at = safe_strptime(task.created_at, "%Y-%m-%d %H:%M") or datetime.datetime.min
