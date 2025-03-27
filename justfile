@@ -7,6 +7,9 @@ test:
   uv run pytest
   just clean
 
+start:
+  uv run streamlit run src/todo/__main__.py
+
 fmt:
   uv run ruff check --fix --select I . # isort
   uv run ruff format .
