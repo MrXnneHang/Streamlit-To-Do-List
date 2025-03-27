@@ -1,41 +1,21 @@
 {
   "tasks": [
     {
-      "id": "81b53fd3-8f00-463a-a01c-faf4853b809c",
-      "task": "hello,world",
+      "id": "c101736b-b148-470c-b205-a53abc68906f",
+      "task": "你好",
       "task_type": "daily",
-      "color": "#33bd00",
-      "created_at": "2025-03-27 11:50",
-      "completed": true,
-      "completed_at": "2025-03-27 11:50",
-      "due_date": null
-    },
-    {
-      "id": "0cc3fab6-dea8-4d09-afe2-ac2911a1dfcd",
-      "task": "hello,world",
-      "task_type": "monthly",
-      "color": "#33bd00",
-      "created_at": "2025-03-27 11:50",
+      "color": "#ff0005",
+      "created_at": "2025-03-27 16:08",
       "completed": false,
       "completed_at": null,
       "due_date": null
     },
     {
-      "id": "b4293af8-12a9-4557-8791-4b7f5a486df8",
-      "task": "hello,world",
-      "task_type": "weekly",
-      "color": "#ff0000",
-      "created_at": "2025-03-27 11:50",
-      "completed": false,
-      "completed_at": null,
-      "due_date": null
-    },
-    {
-      "id": "3ecace54-34b7-41e0-8884-73e756fed02d",
-      "task": "hello,world",
+      "id": "d7ef88de-d554-4b82-8b55-5cba43c9df47",
+      "task": "欢迎使用～",
       "task_type": "daily",
       "color": "#007AFF",
-      "created_at": "2025-03-27 11:50",
+      "created_at": "2025-03-27 16:08",
       "completed": false,
       "completed_at": null,
       "due_date": null
@@ -43,68 +23,61 @@
   ],
   "history": [
     {
-      "id": "1f73aaa2-5874-4e02-80ec-2487146c122b",
-      "action": "Completed_action",
-      "task_description": "hello,world",
+      "id": "d0cb75d9-94f8-49ef-b23b-553be1d45347",
+      "action": "Added",
+      "task_description": "你好",
       "task_type": "daily",
-      "timestamp": "2025-03-27 11:50"
+      "timestamp": "2025-03-27 16:08"
     },
     {
-      "id": "24fa0042-1232-48fb-905f-2e4d18782a5a",
-      "action": "Added",
-      "task_description": "hello,world",
-      "task_type": "daily",
-      "timestamp": "2025-03-27 11:50"
-    },
-    {
-      "id": "b5d61709-6534-4452-b275-e48e5361a3e8",
-      "action": "Added",
-      "task_description": "hello,world",
-      "task_type": "monthly",
-      "timestamp": "2025-03-27 11:50"
-    },
-    {
-      "id": "03a2b3b3-523c-4534-8ff5-9d20d99236ee",
-      "action": "Added",
-      "task_description": "hello,world",
-      "task_type": "weekly",
-      "timestamp": "2025-03-27 11:50"
-    },
-    {
-      "id": "5d110de3-3ca0-4a62-8ea1-901d187e0609",
+      "id": "ac92cd60-5aac-461f-b9c8-7230518def05",
       "action": "Deleted",
-      "task_description": "hello,world",
+      "task_description": "你好",
       "task_type": "daily",
-      "timestamp": "2025-03-27 11:50"
+      "timestamp": "2025-03-27 16:08"
     },
     {
-      "id": "6ad6e31e-9df5-4286-93f0-2f294aa4a372",
+      "id": "5d3d0e0a-beb3-4708-a630-7c8fc299fae1",
+      "action": "Added",
+      "task_description": "你好",
+      "task_type": "daily",
+      "timestamp": "2025-03-27 16:08"
+    },
+    {
+      "id": "534c4dc6-7dc1-410e-adcb-7ea45789758b",
+      "action": "Added",
+      "task_description": "欢迎使用～",
+      "task_type": "daily",
+      "timestamp": "2025-03-27 16:08"
+    },
+    {
+      "id": "f8f236d1-7f28-4f46-90dd-6409fe0da4b8",
       "action": "Deleted",
-      "task_description": "hello,world",
+      "task_description": "你好",
       "task_type": "daily",
-      "timestamp": "2025-03-27 11:50"
+      "timestamp": "2025-03-27 16:07"
     },
     {
-      "id": "cea3c788-e9fd-4ae2-bd7a-c14ae8a767ac",
-      "action": "Added",
-      "task_description": "hello,world",
+      "id": "91e7a188-3d1f-4f67-af24-11545dcc2d6d",
+      "action": "Deleted",
+      "task_description": "欢迎使用～",
       "task_type": "daily",
-      "timestamp": "2025-03-27 11:50"
+      "timestamp": "2025-03-27 16:07"
     },
     {
-      "id": "4abed6eb-fb5b-45b4-a8f5-ed34edf3ec02",
+      "id": "ca8e3873-a6f4-4f31-8a07-df7319a6ddf6",
       "action": "Added",
-      "task_description": "hello,world",
+      "task_description": "欢迎使用～",
       "task_type": "daily",
-      "timestamp": "2025-03-27 11:50"
+      "timestamp": "2025-03-27 16:07"
     },
     {
-      "id": "23507e0f-b825-4d15-bf56-7d5745e6ac78",
+      "id": "1a8c0c03-7032-4490-b3d9-ef8313ab847f",
       "action": "Added",
-      "task_description": "hello,world",
+      "task_description": "你好",
       "task_type": "daily",
-      "timestamp": "2025-03-27 11:50"
+      "timestamp": "2025-03-27 16:07"
     }
   ],
-  "last_updated": "2025-03-27 11:50"
+  "last_updated": "2025-03-27 16:08"
 }
