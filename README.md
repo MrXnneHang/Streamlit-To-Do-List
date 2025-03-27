@@ -17,13 +17,15 @@
 
 # A To-Do-List App buit with Streamlit
 
+基于 [Streamlit](https://streamlit.io/) , 从 [ShigureLab/python-lib-starter](https://github.com/ShigureLab/python-lib-starter) 模板创建的 To-Do-List 应用。
+
 ## 介绍：
 
 原因是我在开发的时候通常总是忘记原本要做什么东西然后需要很长的时间去回想或者根本不记得了。所以我就想着做一个简单的 To-Do-List 来帮助我记录下我要做的事情。
 
-重要的在于拆分。我把任务分为日常（每日），每周，每月，是为了让我把大任务在时间上分解成小任务，这样我就可以更好的去完成它。
+我把任务分为日常（每日），每周，每月，是为了让我把大任务在时间上分解成小任务，这样我就可以更好的去完成它。
 
-对了，它简单地支持了双语切换，目前支持中文和英文。
+它简单地支持了用户语言切换，目前支持中文和英文。
 
 ![alt text](https://fastly.jsdelivr.net/gh/MrXnneHang/blog_img/BlogHosting/img/25/02/202503271604519.png)
 
