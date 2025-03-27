@@ -8,6 +8,7 @@ test:
   just clean
 
 fmt:
+  uv run ruff check --fix --select I . # isort
   uv run ruff format .
 
 lint:
