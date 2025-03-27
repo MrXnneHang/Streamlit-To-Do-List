@@ -1,4 +1,4 @@
-VERSION := `uv run python -c "import sys; from moelib import __version__ as version; sys.stdout.write(version)"`
+VERSION := `uv run scripts/get-version.py src/todo/__version__.py`
 
 install:
   uv sync --all-extras --dev
@@ -11,7 +11,7 @@ fmt:
   uv run ruff format .
 
 lint:
-  uv run pyright src/moelib tests
+  uv run pyright src/todo tests
   uv run ruff check .
 
 fmt-docs:

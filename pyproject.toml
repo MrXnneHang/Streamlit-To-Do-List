@@ -1,9 +1,9 @@
 [project]
-name = "moelib"
+name = "streamlib-to-do"
 version = "0.1.0"
 description = ""
 readme = "README.md"
-requires-python = ">=3.9"
+requires-python = ">=3.11"
 dependencies = []
 authors = [{ name = "Nyakku Shigure", email = "sigure.qaq@gmail.com" }]
 keywords = []
@@ -14,8 +14,6 @@ classifiers = [
   "Typing :: Typed",
   "Programming Language :: Python",
   "Programming Language :: Python :: 3",
-  "Programming Language :: Python :: 3.9",
-  "Programming Language :: Python :: 3.10",
   "Programming Language :: Python :: 3.11",
   "Programming Language :: Python :: 3.12",
   "Programming Language :: Python :: 3.13",
@@ -23,13 +21,13 @@ classifiers = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/ShigureLab/moelib"
-Documentation = "https://github.com/ShigureLab/moelib"
-Repository = "https://github.com/ShigureLab/moelib"
-Issues = "https://github.com/ShigureLab/moelib/issues"
+Homepage = "https://github.com/ShigureLab/todo"
+Documentation = "https://github.com/ShigureLab/todo"
+Repository = "https://github.com/ShigureLab/todo"
+Issues = "https://github.com/ShigureLab/todo/issues"
 
 [project.scripts]
-moelib = "moelib.__main__:main"
+todo = "todo.__main__:main"
 
 [dependency-groups]
 dev = [
@@ -40,13 +38,13 @@ dev = [
 ]
 
 [tool.pyright]
-include = ["src/moelib", "tests"]
-pythonVersion = "3.9"
+include = ["src/todo", "tests"]
+pythonVersion = "3.11"
 typeCheckingMode = "strict"
 
 [tool.ruff]
 line-length = 120
-target-version = "py39"
+target-version = "py311"
 
 [tool.ruff.lint]
 select = [
@@ -94,9 +92,6 @@ ignore = [
 
 [tool.ruff.lint.isort]
 required-imports = ["from __future__ import annotations"]
-known-first-party = ["moelib"]
+known-first-party = ["todo"]
 combine-as-imports = true
 
-[build-system]
-requires = ["hatchling"]
-build-backend = "hatchling.build"

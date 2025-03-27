@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from moelib import __version__
+from todo import __version__
 
 
 def test_version():
