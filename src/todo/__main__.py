@@ -16,6 +16,12 @@ from todo._dictionary import LANGUAGES
 if TYPE_CHECKING:
     from todo._typing import TaskType
 
+from todo._dataclass import ToDoSettings
+from todo.utils.config import load_settings_file
+
+# Load settings
+settings: ToDoSettings = load_settings_file("todo.toml", ToDoSettings)
+
 
 # ========================
 # Filter Functions (replaced lambdas)
@@ -87,7 +93,7 @@ def t(key: str) -> str:
 # ========================
 # Constants and Config
 # ========================
-DATA_FILE = Path("./config/todo_data_simplified.json")
+DATA_FILE = Path(settings.history_file_path)
 
 
 # ========================
@@ -332,7 +338,10 @@ if "tasks" not in st.session_state:
     st.session_state.tasks.sort(key=sort_tasks_by_due_date)
     st.session_state.history.sort(key=sort_history_items, reverse=True)
 
-st.set_page_config(page_title="✓ 轻简待办", page_icon="✓", layout="wide")
+if settings.as_package:
+    pass
+else:
+    st.set_page_config(page_title="✓ 轻简待办", page_icon="✓", layout="wide")
 st.markdown(get_modern_light_css(), unsafe_allow_html=True)
 
 # UI Layout

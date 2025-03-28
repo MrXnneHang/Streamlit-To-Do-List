@@ -2,7 +2,9 @@ from __future__ import annotations
 
 import datetime
 import uuid
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Annotated
+
+from pydantic import BaseModel, Field
 
 if TYPE_CHECKING:
     from todo._typing import ActionType, HistoryItemDict, TaskDict, TaskType
@@ -79,3 +81,8 @@ class HistoryItem:
             task_description=data["task_description"],
             task_type=data["task_type"],
         )
+
+
+class ToDoSettings(BaseModel):
+    history_file_path: Annotated[str, Field("./config/todo_data_simplified.json", title="历史文件路径")]
+    as_package: Annotated[bool, Field(False, title="是否作为子项目")]
