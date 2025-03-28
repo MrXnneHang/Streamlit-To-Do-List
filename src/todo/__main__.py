@@ -2,114 +2,19 @@ from __future__ import annotations
 
 import datetime
 import json
-import uuid
 from pathlib import Path
-from typing import TYPE_CHECKING, Literal, TypedDict, cast
+from typing import TYPE_CHECKING, cast
 
 if TYPE_CHECKING:
     from collections.abc import Callable
 
 import streamlit as st
 
+from todo._dataclass import HistoryItem, Task
 from todo._dictionary import LANGUAGES
 
-# ========================
-# Type Definitions
-# ========================
-TaskType = Literal["daily", "weekly", "monthly"]
-ActionType = Literal["Added", "Completed_action", "Deleted", "Uncompleted"]
-
-
-class TaskDict(TypedDict):
-    id: str
-    task: str
-    task_type: TaskType
-    color: str
-    created_at: str
-    completed: bool
-    completed_at: str | None
-    due_date: str | None
-
-
-class HistoryItemDict(TypedDict):
-    id: str
-    action: ActionType
-    task_description: str
-    task_type: str
-    timestamp: str
-
-
-# ========================
-# Data Models
-# ========================
-class Task:
-    def __init__(
-        self,
-        task: str,
-        task_type: TaskType = "daily",
-        color: str = "#007AFF",
-        due_date: str | None = None,
-    ):
-        self.id = str(uuid.uuid4())
-        self.task = task
-        self.task_type: TaskType = task_type
-        self.color = color if color else "#007AFF"
-        self.created_at = datetime.datetime.now().strftime("%Y-%m-%d %H:%M")
-        self.completed = False
-        self.completed_at: str | None = None
-        self.due_date = due_date
-
-    def to_dict(self) -> TaskDict:
-        return {
-            "id": self.id,
-            "task": self.task,
-            "task_type": self.task_type,
-            "color": self.color,
-            "created_at": self.created_at,
-            "completed": self.completed,
-            "completed_at": self.completed_at,
-            "due_date": self.due_date,
-        }
-
-    @classmethod
-    def from_dict(cls, data: TaskDict) -> Task:
-        task = cls(
-            task=data["task"],
-            task_type=data["task_type"],
-            color=data.get("color", "#007AFF"),
-            due_date=data.get("due_date"),
-        )
-        task.id = data["id"]
-        task.created_at = data["created_at"]
-        task.completed = data["completed"]
-        task.completed_at = data.get("completed_at")
-        return task
-
-
-class HistoryItem:
-    def __init__(self, action: ActionType, task_description: str, task_type: str):
-        self.id = str(uuid.uuid4())
-        self.action: ActionType = action
-        self.task_description = task_description[:50] + ("..." if len(task_description) > 50 else "")
-        self.task_type = task_type if task_type else "unknown"
-        self.timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M")
-
-    def to_dict(self) -> HistoryItemDict:
-        return {
-            "id": self.id,
-            "action": self.action,
-            "task_description": self.task_description,
-            "task_type": self.task_type,
-            "timestamp": self.timestamp,
-        }
-
-    @classmethod
-    def from_dict(cls, data: HistoryItemDict) -> HistoryItem:
-        return cls(
-            action=data["action"],
-            task_description=data["task_description"],
-            task_type=data["task_type"],
-        )
+if TYPE_CHECKING:
+    from todo._typing import TaskType
 
 
 # ========================
@@ -420,108 +325,104 @@ def display_task_list(tasks: list[Task], list_context: str, lang: str) -> None:
 # ========================
 # Main Application
 # ========================
-def main():
-    # Initialize session state
-    if "tasks" not in st.session_state:
-        st.session_state.tasks, st.session_state.history = load_data()
-        st.session_state.tasks.sort(key=sort_tasks_by_due_date)
-        st.session_state.history.sort(key=sort_history_items, reverse=True)
 
-    st.set_page_config(page_title="✓ 轻简待办", page_icon="✓", layout="wide")
-    st.markdown(get_modern_light_css(), unsafe_allow_html=True)
+# Initialize session state
+if "tasks" not in st.session_state:
+    st.session_state.tasks, st.session_state.history = load_data()
+    st.session_state.tasks.sort(key=sort_tasks_by_due_date)
+    st.session_state.history.sort(key=sort_history_items, reverse=True)
 
-    # UI Layout
-    with st.container():
-        cols = st.columns([0.9, 0.1])
-        with cols[0]:
-            st.title(t("title"))
-        with cols[1]:
-            st.selectbox(
-                "Language/语言",
-                options=list(LANGUAGES.keys()),
-                format_func=lambda lang_code: "English" if lang_code == "en" else "中文",
-                key="language",
-                label_visibility="collapsed",
-                on_change=lambda: st.rerun(),
+st.set_page_config(page_title="✓ 轻简待办", page_icon="✓", layout="wide")
+st.markdown(get_modern_light_css(), unsafe_allow_html=True)
+
+# UI Layout
+with st.container():
+    cols = st.columns([0.9, 0.1])
+    with cols[0]:
+        st.title(t("title"))
+    with cols[1]:
+        st.selectbox(
+            "Language/语言",
+            options=list(LANGUAGES.keys()),
+            format_func=lambda lang_code: "English" if lang_code == "en" else "中文",
+            key="language",
+            label_visibility="collapsed",
+            on_change=lambda: st.rerun(),
+        )
+    st.divider()
+
+# Sidebar
+with st.sidebar:
+    st.header(f"{t('add_task')}")
+    with st.form("add_task_form", clear_on_submit=True):
+        task_desc = st.text_area(t("task_desc"), placeholder=t("task_placeholder"), key="new_task_desc")
+        col_s1, col_s2 = st.columns(2)
+        with col_s1:
+            task_type: TaskType = cast(
+                "TaskType",
+                st.radio(
+                    t("task_type"),
+                    options=["daily", "weekly", "monthly"],
+                    format_func=lambda x: t(x),
+                    key="new_task_type",
+                    horizontal=False,
+                ),
             )
-        st.divider()
-
-    # Sidebar
-    with st.sidebar:
-        st.header(f"{t('add_task')}")
-        with st.form("add_task_form", clear_on_submit=True):
-            task_desc = st.text_area(t("task_desc"), placeholder=t("task_placeholder"), key="new_task_desc")
-            col_s1, col_s2 = st.columns(2)
-            with col_s1:
-                task_type: TaskType = cast(
-                    "TaskType",
-                    st.radio(
-                        t("task_type"),
-                        options=["daily", "weekly", "monthly"],
-                        format_func=lambda x: t(x),
-                        key="new_task_type",
-                        horizontal=False,
-                    ),
-                )
-            with col_s2:
-                task_color = st.color_picker(t("color"), value="#007AFF", key="new_task_color")
-            due_date_option = st.date_input(
-                t("due_date"), value=None, min_value=datetime.date.today(), key="new_task_due_date"
+        with col_s2:
+            task_color = st.color_picker(t("color"), value="#007AFF", key="new_task_color")
+        due_date_option = st.date_input(
+            t("due_date"), value=None, min_value=datetime.date.today(), key="new_task_due_date"
+        )
+        submitted = st.form_submit_button(f"✓ {t('add_task')}")
+        if submitted and task_desc.strip():
+            new_task = Task(
+                task=task_desc.strip(),
+                task_type=task_type,
+                color=task_color,
+                due_date=due_date_option.strftime("%Y-%m-%d") if due_date_option else None,
             )
-            submitted = st.form_submit_button(f"✓ {t('add_task')}")
-            if submitted and task_desc.strip():
-                new_task = Task(
-                    task=task_desc.strip(),
-                    task_type=task_type,
-                    color=task_color,
-                    due_date=due_date_option.strftime("%Y-%m-%d") if due_date_option else None,
-                )
-                st.session_state.tasks.insert(0, new_task)
-                st.session_state.history.insert(0, HistoryItem("Added", new_task.task, new_task.task_type))
-                save_data(st.session_state.tasks, st.session_state.history)
-                st.rerun()
+            st.session_state.tasks.insert(0, new_task)
+            st.session_state.history.insert(0, HistoryItem("Added", new_task.task, new_task.task_type))
+            save_data(st.session_state.tasks, st.session_state.history)
+            st.rerun()
 
-    # Main Tabs
-    tab_keys = ["daily", "weekly", "monthly", "completed"]
-    tabs = st.tabs([t(key) for key in tab_keys])
+# Main Tabs
+tab_keys = ["daily", "weekly", "monthly", "completed"]
+tabs = st.tabs([t(key) for key in tab_keys])
 
-    task_filters: dict[str, Callable[[Task], bool]] = {
-        "daily": filter_daily_tasks,
-        "weekly": filter_weekly_tasks,
-        "monthly": filter_monthly_tasks,
-        "completed": filter_completed_tasks,
-    }
+task_filters: dict[str, Callable[[Task], bool]] = {
+    "daily": filter_daily_tasks,
+    "weekly": filter_weekly_tasks,
+    "monthly": filter_monthly_tasks,
+    "completed": filter_completed_tasks,
+}
 
-    for i, key in enumerate(tab_keys):
-        with tabs[i]:
-            filtered_tasks = [task for task in st.session_state.tasks if task_filters[key](task)]
+for i, key in enumerate(tab_keys):
+    with tabs[i]:
+        filtered_tasks = [task for task in st.session_state.tasks if task_filters[key](task)]
 
-            if key == "completed":
-                filtered_tasks.sort(key=sort_completed_tasks, reverse=True)
-            else:
-                filtered_tasks.sort(key=sort_tasks_by_due_date)
+        if key == "completed":
+            filtered_tasks.sort(key=sort_completed_tasks, reverse=True)
+        else:
+            filtered_tasks.sort(key=sort_tasks_by_due_date)
 
-            if not filtered_tasks:
-                st.info(f"🎉 {t('no_tasks')}")
-            else:
-                display_task_list(filtered_tasks, key, st.session_state.get("language", "en"))
+        if not filtered_tasks:
+            st.info(f"🎉 {t('no_tasks')}")
+        else:
+            display_task_list(filtered_tasks, key, st.session_state.get("language", "en"))
 
-            if key == "completed":
-                st.markdown("---")
-                with st.expander(f"📜 {t('history')}", expanded=False):
-                    if not st.session_state.history:
-                        st.info(t("no_history"))
-                    else:
-                        for record in st.session_state.history[:30]:
-                            st.markdown(
-                                f"""<div class='history-item history-{record.action.lower().replace("_", "-")}'>
-                                    <span class='action-text'>{t(record.action)}:</span>
-                                    <span class='history-task-preview'>"{record.task_description}"</span>
-                                    <div class='history-meta'>{t("task_type")}: {t(record.task_type) if record.task_type in ["daily", "weekly", "monthly"] else record.task_type} | {record.timestamp}</div>
-                                </div>""",
-                                unsafe_allow_html=True,
-                            )
-
-
-if __name__ == "__main__":
-    main()
+        if key == "completed":
+            st.markdown("---")
+            with st.expander(f"📜 {t('history')}", expanded=False):
+                if not st.session_state.history:
+                    st.info(t("no_history"))
+                else:
+                    for record in st.session_state.history[:30]:
+                        st.markdown(
+                            f"""<div class='history-item history-{record.action.lower().replace("_", "-")}'>
+                                <span class='action-text'>{t(record.action)}:</span>
+                                <span class='history-task-preview'>"{record.task_description}"</span>
+                                <div class='history-meta'>{t("task_type")}: {t(record.task_type) if record.task_type in ["daily", "weekly", "monthly"] else record.task_type} | {record.timestamp}</div>
+                            </div>""",
+                            unsafe_allow_html=True,
+                        )
