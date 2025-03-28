@@ -356,7 +356,6 @@ with st.container():
             format_func=lambda lang_code: "English" if lang_code == "en" else "中文",
             key="language",
             label_visibility="collapsed",
-            on_change=lambda: st.rerun(),
         )
     st.divider()
 

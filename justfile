@@ -10,7 +10,7 @@ test:
 start:
   uv lock
   uv sync
-  uv run streamlit run src/todo/todo.py
+  uv run streamlit run src/todo/streamlit_to_do.py
 
 fmt:
   uv run ruff check --fix --select I . # isort
