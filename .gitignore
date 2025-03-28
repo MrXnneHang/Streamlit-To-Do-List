@@ -122,3 +122,6 @@ dmypy.json
 
 # logs
 log
+
+# uv.lock
+uv.lock
