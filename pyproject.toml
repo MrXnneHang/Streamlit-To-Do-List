@@ -9,7 +9,7 @@ dependencies = [
     "pydantic==2.10.6",
     "tomli_w==1.2.0",
 ]
-authors = [{ name = "Nyakku Shigure", email = "sigure.qaq@gmail.com" }]
+authors = [{ name = "XnneHang", email = "xnnehang@gmail.com" }]
 keywords = []
 license = { text = "MIT" }
 classifiers = [
@@ -23,15 +23,6 @@ classifiers = [
   "Programming Language :: Python :: 3.13",
   "Programming Language :: Python :: Implementation :: CPython",
 ]
-
-[project.urls]
-Homepage = "https://github.com/ShigureLab/todo"
-Documentation = "https://github.com/ShigureLab/todo"
-Repository = "https://github.com/ShigureLab/todo"
-Issues = "https://github.com/ShigureLab/todo/issues"
-
-[project.scripts]
-
 
 [dependency-groups]
 dev = [
