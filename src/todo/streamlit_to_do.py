@@ -7,7 +7,6 @@ from typing import TYPE_CHECKING, cast
 
 if TYPE_CHECKING:
     from collections.abc import Callable
-
 import streamlit as st
 
 from todo._dataclass import HistoryItem, Task
@@ -15,8 +14,8 @@ from todo._dictionary import LANGUAGES
 
 if TYPE_CHECKING:
     from todo._typing import TaskType
-
 from todo._dataclass import ToDoSettings
+from todo.styles.global_style import style
 from todo.utils.config import load_settings_file
 
 # Load settings
@@ -24,7 +23,7 @@ settings: ToDoSettings = load_settings_file("todo.toml", ToDoSettings)
 
 
 # ========================
-# Filter Functions (replaced lambdas)
+# Filter Functions
 # ========================
 def filter_daily_tasks(task: Task) -> bool:
     return task.task_type == "daily" and not task.completed
@@ -43,7 +42,7 @@ def filter_completed_tasks(task: Task) -> bool:
 
 
 # ========================
-# Sorting Functions (replaced lambdas)
+# Sorting Functions
 # ========================
 def sort_tasks_by_due_date(task: Task) -> tuple[datetime.date, datetime.datetime]:
     """Sort key function for tasks - by due date (earliest first) then creation date (oldest first)"""
@@ -57,10 +56,8 @@ def sort_tasks_by_due_date(task: Task) -> tuple[datetime.date, datetime.datetime
             due_date = datetime.date.max
         else:
             due_date = safe_time.date()
-
     # Handle created_at (secondary sort key)
     created_at = safe_strptime(task.created_at, "%Y-%m-%d %H:%M") or datetime.datetime.min
-
     return (due_date, created_at)
 
 
@@ -90,6 +87,37 @@ def t(key: str) -> str:
     return LANGUAGES.get(st.session_state.get("language", "en"), {}).get(key, key)
 
 
+def get_due_date_info(task: Task, lang: str, today: datetime.date) -> str:
+    """返回任务的截止日期信息和状态"""
+    if task.completed:
+        if task.completed_at:
+            try:
+                completed_dt = datetime.datetime.strptime(task.completed_at, "%Y-%m-%d %H:%M")
+                completed_str = completed_dt.strftime("%Y-%m-%d %H:%M" if lang == "en" else "%Y年%m月%d日 %H:%M")
+                return f"✓ {t('Completed')} {completed_str}"
+            except (ValueError, TypeError):
+                return f"✓ {t('Completed')}"
+        else:
+            return f"✓ {t('Completed')}"
+    elif task.due_date:
+        try:
+            due_date_obj = datetime.datetime.strptime(task.due_date, "%Y-%m-%d").date()
+            days_diff = (due_date_obj - today).days
+            if days_diff < 0:
+                return f"🔥 {t('Overdue')} {-days_diff} {t('days')}"
+            elif days_diff == 0:
+                return f"⏰ {t('Due today')}"
+            elif days_diff <= 3:
+                return f"🗓️ {t('Due in')} {days_diff} {t('days')}"
+            else:
+                due_date_str = due_date_obj.strftime("%b %d, %Y" if lang == "en" else "%Y年%m月%d日")
+                return f"🗓️ {t('Due')} {due_date_str}"
+        except (ValueError, TypeError):
+            return f"🗓️ {task.due_date} (Invalid)"
+
+    return ""
+
+
 # ========================
 # Constants and Config
 # ========================
@@ -97,58 +125,61 @@ DATA_FILE = Path(settings.history_file_path)
 
 
 # ========================
-# CSS Styling
+# CSS Styling - 只保留布局相关的CSS
 # ========================
-def get_modern_light_css() -> str:
-    mark_complete_text = t("mark_complete")
-    mark_incomplete_text = t("mark_incomplete")
-
-    return f"""
+def get_layout_css() -> str:
+    return """
     <style>
-    :root {{
-        /* Core Colors */
-        --bg-color: #ffffff;
-        --sidebar-bg: #f5f5f7;
-        --card-bg: #ffffff;
-        --text-color: #1d1d1f;
-        --secondary-text-color: #6e6e73;
-        --border-color: #d2d2d7;
-        --accent-border-width: 4px;
-        /* Functional Colors */
-        --primary-color: #007AFF;
-        --danger-color: #FF3B30;
-        --warning-color: #FF9500;
-        --success-color: #34C759;
-        --info-color: #5AC8FA;
-        /* Component Specific */
-        --history-bg: #f5f5f7;
-        --button-complete-bg: var(--success-color);
-        --button-complete-text: #ffffff;
-        --button-undo-bg: var(--warning-color);
-        --button-undo-text: #ffffff;
-    }}
-    /* Apply base colors */
-    body {{ background-color: var(--bg-color); color: var(--text-color); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }}
-    .stApp {{ background-color: var(--bg-color); }}
-    [data-testid="stSidebar"] {{ background-color: var(--sidebar-bg) !important; border-right: 1px solid var(--border-color); padding-top: 1rem; }}
-    [data-testid="stSidebar"] [data-testid="stForm"] {{ background-color: #ffffff; padding: 1rem; border-radius: 8px; margin: 0 0.5rem 1rem 0.5rem; border: 1px solid var(--border-color); }}
-    [data-testid="stSidebar"] label, [data-testid="stSidebar"] .st-emotion-cache-1kyxreq e1f1d6gn0 {{ color: var(--text-color) !important; font-weight: 500; }}
-    .stTextInput input, .stTextArea textarea, .stDateInput input {{ border: 1px solid var(--border-color) !important; background-color: #ffffff !important; color: var(--text-color) !important; border-radius: 6px !important; }}
-    .stTextArea textarea {{ min-height: 80px; }}
-    .stButton>button {{ border-radius: 6px !important; border: none !important; font-weight: 500; transition: transform 0.1s ease-out, box-shadow 0.1s ease-out; }}
-    .stButton>button:hover {{ transform: scale(1.03); box-shadow: 0 2px 5px rgba(0,0,0,0.1); }}
-    [data-testid="stSidebar"] .stButton>button[kind="primary"] {{ background-color: var(--primary-color) !important; color: white !important; width: 100%; }}
     /* --- Task Card Styling --- */
-    .task-card {{ padding: 1rem 1.2rem; border-radius: 8px; margin-bottom: 1rem; position: relative; overflow: hidden; transition: all 0.2s ease; }}
-    .task-card:hover {{ box-shadow: 0 2px 8px rgba(0,0,0,0.1); transform: translateY(-1px); }}
-    .task-card.completed-card {{ border-left-width: var(--accent-border-width); border-left-style: solid; }}
-    .task-card .task-content {{ color: var(--text-color); font-size: 1rem; font-weight: 500; margin-bottom: 0.6rem; word-wrap: break-word; white-space: pre-wrap; }}
-    .task-card .task-content.completed {{ text-decoration: line-through; color: var(--secondary-text-color); opacity: 0.8; }}
-    .task-card .meta-info {{ font-size: 0.8rem; color: var(--secondary-text-color); margin-bottom: 0.8rem; display: flex; flex-wrap: wrap; gap: 0.4rem 1rem; align-items: center; }}
-    .meta-due-date {{ display: inline-flex; align-items: center; gap: 0.3em; white-space: nowrap; }}
+    .task-card {
+        padding: 1rem 1.2rem;
+        border-radius: 8px;
+        margin-bottom: 1rem;
+        position: relative;
+        overflow: hidden;
+        transition: all 0.2s ease;
+    }
+    .task-card:hover {
+        transform: translateY(-1px);
+    }
+    .task-card.completed-card {
+        border-left-width: 4px;
+        border-left-style: solid;
+    }
+    .task-card .task-content {
+        font-size: 1rem;
+        font-weight: 500;
+        margin-bottom: 0.6rem;
+        word-wrap: break-word;
+        white-space: pre-wrap;
+    }
+    .task-card .task-content.completed {
+        text-decoration: line-through;
+        opacity: 0.8;
+    }
+    .task-card .meta-info {
+        font-size: 0.8rem;
+        margin-bottom: 0.8rem;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.4rem 1rem;
+        align-items: center;
+    }
+    .meta-due-date {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.3em;
+        white-space: nowrap;
+    }
     /* --- Action Buttons Container --- */
-    .task-actions {{ display: flex; justify-content: flex-end; align-items: center; gap: 0.5rem; padding-top: 0.5rem; }}
-    .task-actions .stButton>button {{
+    .task-actions {
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        gap: 0.5rem;
+        padding-top: 0.5rem;
+    }
+    .task-actions .stButton>button {
         padding: 0.25rem 0.6rem !important;
         font-size: 0.85rem !important;
         min-height: auto !important;
@@ -157,36 +188,33 @@ def get_modern_light_css() -> str:
         width: auto;
         min-width: 35px;
         text-align: center;
-        border: none !important;
-        box-shadow: none !important;
-        transition: background-color 0.2s ease, transform 0.1s ease;
-    }}
-    .task-actions .stButton>button:hover {{
+        transition: transform 0.1s ease;
+    }
+    .task-actions .stButton>button:hover {
         transform: scale(1.05);
-    }}
-    /* --- Specific Button Colors using Title Attribute --- */
-    .task-actions .stButton>button[title="{mark_complete_text}"] {{
-        background-color: var(--button-complete-bg) !important;
-        color: var(--button-complete-text) !important;
-    }}
-    .task-actions .stButton>button[title="{mark_incomplete_text}"] {{
-        background-color: var(--button-undo-bg) !important;
-        color: var(--button-undo-text) !important;
-    }}
+    }
     /* History item styling */
-    .history-item {{ padding: 0.6rem 1rem; margin-bottom: 0.5rem; border-radius: 6px; background-color: var(--history-bg); border-left: 3px solid var(--border-color); font-size: 0.9rem; color: var(--secondary-text-color); transition: background-color 0.2s ease; }}
-    .history-item:hover {{ background-color: #e8e8ed; }}
-    .history-item .action-text {{ font-weight: 600; margin-right: 0.4em; }}
-    .history-item .history-task-preview {{ font-style: italic; opacity: 0.9; }}
-    .history-meta {{ font-size: 0.8rem; opacity: 0.8; margin-top: 0.2rem; color: #8a8a8e; }}
-    .history-added {{ border-left-color: var(--primary-color); }} .history-completed {{ border-left-color: var(--success-color); }} .history-deleted {{ border-left-color: var(--danger-color); }} .history-uncompleted {{ border-left-color: var(--warning-color); }}
-    .history-added .action-text {{ color: var(--primary-color); }} .history-completed .action-text {{ color: var(--success-color); }} .history-deleted .action-text {{ color: var(--danger-color); }} .history-uncompleted .action-text {{ color: var(--warning-color); }}
-    /* General adjustments */
-    h1, h2, h3 {{ color: var(--text-color); }} h1 {{ margin-bottom: 1rem; font-weight: 600; }}
-    .stTabs {{ margin-top: 0.5rem; border-bottom: 1px solid var(--border-color); }}
-    [data-baseweb="tab"] {{ font-size: 0.95rem; padding: 0.8rem 1rem !important; }}
-    [data-testid="stExpander"] summary {{ font-size: 1rem; font-weight: 500; }}
-    .stDivider {{ margin: 0.5rem 0 1.5rem 0 !important; background-color: var(--border-color) !important; }}
+    .history-item {
+        padding: 0.6rem 1rem;
+        margin-bottom: 0.5rem;
+        border-radius: 6px;
+        border-left: 3px solid;
+        font-size: 0.9rem;
+        transition: background-color 0.2s ease;
+    }
+    .history-item .action-text {
+        font-weight: 600;
+        margin-right: 0.4em;
+    }
+    .history-item .history-task-preview {
+        font-style: italic;
+        opacity: 0.9;
+    }
+    .history-meta {
+        font-size: 0.8rem;
+        opacity: 0.8;
+        margin-top: 0.2rem;
+    }
     </style>
     """
 
@@ -228,11 +256,7 @@ def display_task_list(tasks: list[Task], list_context: str, lang: str) -> None:
     today = datetime.date.today()
     for task in tasks:
         completed_class_card = "completed-card" if task.completed else ""
-        card_style = f"""
-            background-color: {task.color}1A;
-            border: 1px solid var(--border-color);
-            border-left: {f"{task.color} {st.session_state.get('accent_border_width', '4px')} solid" if task.completed else "1px solid var(--border-color)"};
-        """
+        card_style = f"background-color: {task.color}1A; border-left-color: {task.color if task.completed else ''};"
         safe_task_desc = task.task
         completed_class_content = "completed" if task.completed else ""
 
@@ -245,49 +269,17 @@ def display_task_list(tasks: list[Task], list_context: str, lang: str) -> None:
         )
 
         col_meta, col_spacer, col_actions = st.columns([6, 2, 2])
+
         with col_spacer:
             pass
+
         with col_meta:
-            meta_parts: list[str] = []
-            due_html, due_style = "", "color: var(--secondary-text-color);"
-
-            if task.completed:
-                if task.completed_at:
-                    try:
-                        completed_dt = datetime.datetime.strptime(task.completed_at, "%Y-%m-%d %H:%M")
-                        completed_str = completed_dt.strftime(
-                            "%Y-%m-%d %H:%M" if lang == "en" else "%Y年%m月%d日 %H:%M"
-                        )
-                        due_html = f"✓ {t('Completed')} {completed_str}"
-                        due_style = "color: var(--success-color);"
-                    except (ValueError, TypeError):
-                        due_html, due_style = f"✓ {t('Completed')}", "color: var(--success-color);"
-                else:
-                    due_html, due_style = f"✓ {t('Completed')}", "color: var(--success-color);"
-            elif task.due_date:
-                try:
-                    due_date_obj = datetime.datetime.strptime(task.due_date, "%Y-%m-%d").date()
-                    days_diff = (due_date_obj - today).days
-                    if days_diff < 0:
-                        due_html, due_style = (
-                            f"🔥 {t('Overdue')} {-days_diff} {t('days')}",
-                            "color: var(--danger-color); font-weight: 600;",
-                        )
-                    elif days_diff == 0:
-                        due_html, due_style = f"⏰ {t('Due today')}", "color: var(--warning-color); font-weight: 600;"
-                    elif days_diff <= 3:
-                        due_html, due_style = f"🗓️ {t('Due in')} {days_diff} {t('days')}", "color: var(--warning-color);"
-                    else:
-                        due_date_str = due_date_obj.strftime("%b %d, %Y" if lang == "en" else "%Y年%m月%d日")
-                        due_html = f"🗓️ {t('Due')} {due_date_str}"
-                except (ValueError, TypeError):
-                    due_html, due_style = f"🗓️ {task.due_date} (Invalid)", "color: var(--danger-color);"
-
-            if due_html:
-                meta_parts.append(f"<span class='meta-due-date' style='{due_style}'>{due_html}</span>")
-
-            if meta_parts:
-                st.markdown(f"<div class='meta-info'>{' '.join(meta_parts)}</div>", unsafe_allow_html=True)
+            due_info = get_due_date_info(task, lang, today)
+            if due_info:
+                st.markdown(
+                    f"<div class='meta-info'><span class='meta-due-date'>{due_info}</span></div>",
+                    unsafe_allow_html=True,
+                )
             else:
                 st.markdown("<div class='meta-info'>&nbsp;</div>", unsafe_allow_html=True)
 
@@ -299,7 +291,7 @@ def display_task_list(tasks: list[Task], list_context: str, lang: str) -> None:
             with cols_buttons[0]:
                 if not task.completed:
                     if st.button(
-                        "->", key=f"complete_{button_key_base}", help=t("mark_complete"), use_container_width=True
+                        "✓", key=f"complete_{button_key_base}", help=t("mark_complete"), use_container_width=True
                     ):
                         task.completed = True
                         task.completed_at = datetime.datetime.now().strftime("%Y-%m-%d %H:%M")
@@ -324,14 +316,25 @@ def display_task_list(tasks: list[Task], list_context: str, lang: str) -> None:
                     st.rerun()
 
             st.markdown("</div>", unsafe_allow_html=True)
-
         st.markdown("</div>", unsafe_allow_html=True)
+
+
+def display_history_items(history_items: list[HistoryItem]) -> None:
+    for record in history_items[:30]:
+        action_class = record.action.lower().replace("_", "-")
+        st.markdown(
+            f"""<div class='history-item history-{action_class}'>
+                <span class='action-text'>{t(record.action)}:</span>
+                <span class='history-task-preview'>"{record.task_description}"</span>
+                <div class='history-meta'>{t("task_type")}: {t(record.task_type) if record.task_type in ["daily", "weekly", "monthly"] else record.task_type} | {record.timestamp}</div>
+            </div>""",
+            unsafe_allow_html=True,
+        )
 
 
 # ========================
 # Main Application
 # ========================
-
 # Initialize session state
 if "tasks" not in st.session_state:
     st.session_state.tasks, st.session_state.history = load_data()
@@ -342,7 +345,10 @@ if settings.as_package:
     pass
 else:
     st.set_page_config(page_title="✓ 轻简待办", page_icon="✓", layout="wide")
-st.markdown(get_modern_light_css(), unsafe_allow_html=True)
+    style()  # 应用全局样式
+
+# 应用布局CSS
+st.markdown(get_layout_css(), unsafe_allow_html=True)
 
 # UI Layout
 with st.container():
@@ -397,7 +403,6 @@ with st.sidebar:
 # Main Tabs
 tab_keys = ["daily", "weekly", "monthly", "completed"]
 tabs = st.tabs([t(key) for key in tab_keys])
-
 task_filters: dict[str, Callable[[Task], bool]] = {
     "daily": filter_daily_tasks,
     "weekly": filter_weekly_tasks,
@@ -425,12 +430,4 @@ for i, key in enumerate(tab_keys):
                 if not st.session_state.history:
                     st.info(t("no_history"))
                 else:
-                    for record in st.session_state.history[:30]:
-                        st.markdown(
-                            f"""<div class='history-item history-{record.action.lower().replace("_", "-")}'>
-                                <span class='action-text'>{t(record.action)}:</span>
-                                <span class='history-task-preview'>"{record.task_description}"</span>
-                                <div class='history-meta'>{t("task_type")}: {t(record.task_type) if record.task_type in ["daily", "weekly", "monthly"] else record.task_type} | {record.timestamp}</div>
-                            </div>""",
-                            unsafe_allow_html=True,
-                        )
+                    display_history_items(st.session_state.history)
