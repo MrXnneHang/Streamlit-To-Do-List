@@ -12,14 +12,14 @@
         <a href="https://github.com/astral-sh/uv"><img alt="uv" src="https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/uv/main/assets/badge/v0.json&style=flat-square"></a>
          <a href="https://github.com/casey/just"><img alt="just" src="https://img.shields.io/badge/just-🤖-yellow?style=flat-square&logoWidth=20"></a>
          <!-- Code Quality -->
-         <a href="https://github.com/astral-sh/ruff"><img alt="Ruff" src="https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json&style=flat-square"></a>
+         <a href="https://github.com/astral-sh/ruff"><img alt="Ruff" src="https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json&style=flat-square"></a>  
          <a href="https://gitmoji.dev"><img alt="Gitmoji" src="https://img.shields.io/badge/gitmoji-😜%20😍-FFDD67?style=flat-square"></a>
     </div>
 </p>
 
 # A To-Do-List App built with Streamlit
 
-Created from the [ShigureLab/python-lib-starter](https://github.com/ShigureLab/python-lib-starter) template, based on [Streamlit](https://streamlit.io/).
+Created from the [ShigureLab/python-lib-starter](https://github.com/ShigureLab/python-lib-starter) template, based on [Streamlit](https://streamlit.io/).  
 
 ## Introduction:
 
@@ -29,8 +29,8 @@ I categorize tasks into daily, weekly, and monthly to break down large tasks int
 
 It simply supports user language switching, currently supporting Chinese and English.
 
-![image-20250327164514385](https://fastly.jsdelivr.net/gh/MrXnneHang/blog_img/BlogHosting/img/25/02/202503271645755.png)
-![image-20250327164638899](https://fastly.jsdelivr.net/gh/MrXnneHang/blog_img/BlogHosting/img/25/02/202503271646199.png)
+![image-20250327164514385](https://cdn.xnnehang.top/MrXnneHang/blog_img/refs/heads/main/BlogHosting/img/25/02/202503271645755.png)                  
+![image-20250327164638899](https://cdn.xnnehang.top/MrXnneHang/blog_img/refs/heads/main/BlogHosting/img/25/02/202503271646199.png)    
 
 ## Deployment
 
